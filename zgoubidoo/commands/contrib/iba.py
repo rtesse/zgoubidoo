@@ -495,7 +495,7 @@ class T1G(_Multipole):
     """
     PARAMETERS = {
         'XL': 209.1 * _ureg.mm,
-        'B1': 1e-6 * _ureg.gauss,
+        'B1': 1e-6 * _ureg.kilogauss,
     }
 
     def post_init(self, **kwargs):
@@ -516,7 +516,7 @@ class T2G(_Multipole):
     """
     PARAMETERS = {
         'XL': 209.1 * _ureg.mm,
-        'B1': 1e-6 * _ureg.gauss,
+        'B1': 1e-6 * _ureg.kilogauss,
     }
 
     def post_init(self, **kwargs):
@@ -1176,20 +1176,20 @@ class CGTR:
             self.start,
             _Collimator('C1G', IA=1, IFORM=2, J=0, C1=5 * _ureg.mm, C2=5 * _ureg.mm),
             _Chamber('Chamber1', IA=1, IFORM=2, J=0, C1=29.75 * _ureg.mm, C2=29.75 * _ureg.mm),
-            _Drift('C1G_T1G', XL=9.2995 * _ureg.cm),
+            _Drift('C1G_T1G', XL=39.2995 * _ureg.cm),
             _Ymy(),
             self.t1g,
             _Drift('T1G_T2G', XL=2.09 * _ureg.cm),
             self.t2g,
-            _Drift('T2G_Q1G', XL=38.7855 * _ureg.cm),
+            _Drift('T2G_Q1G', XL=8.7855 * _ureg.cm),
             self.q1g,
             _Drift('Q1G_Q2G', XL=30.3 * _ureg.cm),
             self.q2g,
-            _Drift('Q2G_SL1G', XL=19.719 * _ureg.cm + 3 * _ureg.cm),
+            _Drift('Q2G_SL1G', XL=17.576 * _ureg.cm + 2.143 * _ureg.cm),
             self.sl1g,
-            _Drift('SL1G_SL2G', XL=3 * _ureg.cm + 3 * _ureg.cm + 1 * _ureg.cm),
+            _Drift('SL1G_SL2G', XL=1 * _ureg.cm),
             self.sl2g,
-            _Drift('SL2G_B1G', XL=39.734 * _ureg.cm + 3 * _ureg.cm - self.b1g.extra_drift),
+            _Drift('SL2G_B1G', XL=39.734 * _ureg.cm - self.b1g.extra_drift),
             _Chamber(IA=2),
             _Chamber('Chamber2', IA=1, IFORM=1, J=0, C1=2.9 * _ureg.cm, C2=1.29 * _ureg.cm, C3=self.b1g.RM),
             self.b1g,
@@ -1198,28 +1198,27 @@ class CGTR:
             _Chamber('Chamber3', IA=1, IFORM=2, J=0, C1=29.75 * _ureg.mm, C2=29.75 * _ureg.mm),
             _Drift('B1G_Q3G', XL=26.44 * _ureg.cm - self.b1g.extra_drift),
             self.q3g,
-            _Drift('Q3G_Q4G', XL=32.6 * _ureg.cm),
+            _Drift('Q3G_Q4G', XL=7.5646 * _ureg.cm + 25.0354 * _ureg.cm),
             self.q4g,
             _Drift('Q4G_Q5G', XL=33.4 * _ureg.cm),
             self.q5g,
             _Drift('Q5G_Q6G', XL=33.5 * _ureg.cm),
             self.q6g,
-            _Drift('Q6G_Q7G', XL=36.0 * _ureg.cm),
+            _Drift('Q6G_Q7G', XL=17.527 * _ureg.cm + 18.472 * _ureg.cm),
             self.q7g,
-            _Drift('Q7G_SL3G', XL=16.5682507 * _ureg.cm + 3 * _ureg.cm),
+            _Drift('Q7G_SL3G', XL=11.95 * _ureg.cm + 4.616 * _ureg.cm),
             self.sl3g,
-            _Drift('SL3G_B2G', XL=30.9927502 * _ureg.cm + 3 * _ureg.cm - self.b2g.extra_drift),
+            _Drift('SL3G_B2G', XL=30.9927502 * _ureg.cm - self.b2g.extra_drift),
             _Chamber(IA=2),
             _Chamber('Chamber4', IA=1, IFORM=1, J=0, C1=4.9 * _ureg.cm, C2=2.2 * _ureg.cm, C3=self.b2g.RM),
             self.b2g,
             _Chamber(IA=2),
-            _Drift('B2G_SMX', XL=31.77 * _ureg.cm - self.b2g.extra_drift - (self.smx.length - 159 * _ureg.mm)/2),
+            _Drift('B2G_SMX', XL=21.21 * _ureg.cm + 10.56 * _ureg.cm - self.b2g.extra_drift - (self.smx.length - 159 * _ureg.mm)/2),
             self.smx,
-            _Drift('SMX_SMY', XL=13.04 * _ureg.cm - (self.smx.length - 159 * _ureg.mm) / 2 - (
-                        self.smy.length - 109 * _ureg.mm) / 2),
+            _Drift('SMX_SMY', XL=13.04 * _ureg.cm),
             self.smy,
-            _Drift('SMY_B3G', XL=20.39 * _ureg.cm - self.b3g.extra_drift),
-            _Collimator('B3G_ENTRY', IA=1, IFORM=1, J=0, C1=11 / 2 * _ureg.cm, C2=9 / 2 * _ureg.cm),
+            _Drift('SMY_B3G', XL=5.543 * _ureg.cm - self.b3g.extra_drift),
+            _Collimator('B3G_ENTxRY', IA=1, IFORM=1, J=0, C1=11 / 2 * _ureg.cm, C2=9 / 2 * _ureg.cm),
             self.b3g,
             _Collimator('B3G_EXIT', IA=1, IFORM=1, J=0, C1=13.65 / 2 * _ureg.cm, C2=9 / 2 * _ureg.cm),
             _Drift('FINAL', XL=1101.071 * _ureg.mm - self.b3g.extra_drift),
@@ -1293,9 +1292,10 @@ class CGTR:
         Returns:
 
         """
-        zi = _Input(name=f"FIT_{fit.LABEL1}", line=self.zi.line + [fit])
+        zi = _Input(name=f"FIT_{fit.LABEL1}", line=self.zi.line)
+        zi.insert_after(self.zi[-1], fit)
         zi.IL = 0
-        zgoubi(code_input=zi, identifier=identifier)
+        zgoubi(code_input=zi, identifier=identifier).collect()
         return fit
 
     def shoot(self,
@@ -1318,12 +1318,12 @@ class CGTR:
         fit = fit_type(
             PENALTY=1e-8,
             PARAMS=[
-                _Fit.Parameter(line=self.zi, place='SMX', parameter=SMX.B1_),
-                _Fit.Parameter(line=self.zi, place='SMY', parameter=SMY.B1_),
+                fit_type.Parameter(line=self.zi, place='SMX', parameter=SMX.B1_),
+                fit_type.Parameter(line=self.zi, place='SMY', parameter=SMY.B1_),
             ],
             CONSTRAINTS=[
-                _Fit.EqualityConstraint(line=self.zi, place='ISO', variable=_Fit.FitCoordinates.Y, value=x),
-                _Fit.EqualityConstraint(line=self.zi, place='ISO', variable=_Fit.FitCoordinates.Z, value=y),
+                fit_type.EqualityConstraint(line=self.zi, place='ISO', variable=fit_type.FitCoordinates.Y, value=x),
+                fit_type.EqualityConstraint(line=self.zi, place='ISO', variable=fit_type.FitCoordinates.Z, value=y),
             ]
         )
         fit = self.fit(zgoubi=zgoubi or _Zgoubi(),
@@ -1362,9 +1362,10 @@ class CGTR:
         self.beam.REFERENCE = 0
         for f in fits:
             for p, r in f.results:
-                self.zi.update(r.results)
                 self.run(zgoubi=z,
-                         identifier={**p, **{'SMX.B1': r.results.at[1, 'final'], 'SMY.B1': r.results.at[2, 'final']}},
+                         identifier={**p, **{'SMX.B1': r.results.at[1, 'final'] * _ureg.kilogauss,
+                                             'SMY.B1': r.results.at[2, 'final'] * _ureg.kilogauss}
+                                     },
                          )
         self.results = z.collect()
         tracks = self.results.tracks

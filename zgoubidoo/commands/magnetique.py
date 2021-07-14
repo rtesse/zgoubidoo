@@ -235,6 +235,13 @@ class CartesianMagnet(Magnet, metaclass=CartesianMagnetType):
     def optical_ref_length(self) -> _Q:
         return self.XL
 
+    @property
+    def entrance_face_integration(self) -> _Q:
+        return self.X_E
+
+    @property
+    def exit_face_integration(self) -> _Q:
+        return self.X_S
 
 class PolarMagnetType(MagnetType):
     """Type for polar magnets."""
@@ -1483,18 +1490,16 @@ class Dipole(PolarMagnet):
         zi = zgoubidoo.Input(f"FIT_{self.LABEL1}_MAGNET")
         zi += _Objet2('BUNCH', BORO=kinematics.brho).add(entry_coordinates)
         zi += particle()
-        zi += _Marker('START')
         zi += self
-        zi += _Marker('END')
         fit = method(PENALTY=1e-12,
                      PARAMS=[
-                         _Fit.Parameter(line=zi, place=self.LABEL1, parameter=Dipole.B0_),
+                         method.Parameter(line=zi, place=self.LABEL1, parameter=Dipole.B0_),
                      ],
                      CONSTRAINTS=[
-                         _Fit.EqualityConstraint(
+                         method.EqualityConstraint(
                              line=zi,
-                             place='END',
-                             variable=_Fit.FitCoordinates.Y,
+                             place='#End',
+                             variable=method.FitCoordinates.Y,
                              value=exit_coordinate
                          ),
                      ]
