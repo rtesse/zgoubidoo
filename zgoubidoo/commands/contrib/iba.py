@@ -83,7 +83,7 @@ class DipoleIBA(_Dipole):
         self.C3_S = fit.best_values['cs_3']
         self.C4_S = fit.best_values['cs_4']
         self.C5_S = fit.best_values['cs_5']
-        #self.XL = (fit.best_values['offset_s'] - fit.best_values['offset_e']) * _ureg.m
+        self.XL = (fit.best_values['offset_s'] - fit.best_values['offset_e']) * _ureg.m
 
 
 class B1G(DipoleIBA):
@@ -554,7 +554,10 @@ class QuadrupoleIBA(_Quadrupole):
         Returns:
 
         """
-        self._current = 0.0
+        if self.PARAMETERS.get('CURRENT'):
+            self._current = self.CURRENT
+        else:
+            self._current = 0.0
         self._gradient = 0.0
         if self.PARAMETERS.get('POLARITY'):
             self.polarity = self.POLARITY
@@ -665,7 +668,7 @@ class QuadrupoleIBA(_Quadrupole):
 
     @property
     def B0(self):
-        return self.gradient * self.R0.to('m').magnitude * _ureg.tesla
+        return self.gradient * self.R0.m_as('m') * _ureg.tesla
 
 
 class QLong(QuadrupoleIBA):
@@ -688,7 +691,7 @@ class QLong(QuadrupoleIBA):
         """
         super().post_init(polarity=polarity,
                           p=[-2.45367E-05, 8.09526E-02, -6.91149E-03],
-                          l_eff=0.490)
+                          l_eff=self.XL.m_as('m'))
 
 
 class QShort(QuadrupoleIBA):
@@ -710,8 +713,8 @@ class QShort(QuadrupoleIBA):
 
         """
         super().post_init(polarity=polarity,
-                          p=[-2.27972E-05, 4.98563E-02, -1.58432E-02],
-                          l_eff=0.290)
+                          p=[-2.38900249E-05, 4.489812381E-02, -9.51433981071E-03],
+                          l_eff=self.XL.m_as('m'))
 
 
 class QWall(QuadrupoleIBA):
@@ -733,8 +736,8 @@ class QWall(QuadrupoleIBA):
 
         """
         super().post_init(polarity=polarity,
-                          p=[-2.23625E-06, 2.46011E-02, 8.21584E-04],
-                          l_eff=0.297)
+                          p=[-1.802496493E-05, 2.75323741E-02, -0.015],
+                          l_eff=self.XL.m_as('m'))
 
 
 class QPMQ(QuadrupoleIBA):
@@ -756,6 +759,7 @@ class QPMQ(QuadrupoleIBA):
 
         """
         super().post_init(polarity=polarity,
+                          l_eff=self.XL.m_as('m'),
                           gradient=17.5)
 
 
@@ -766,6 +770,7 @@ class Q1C(QShort):
     PARAMETERS = {
         'LABEL1': 'Q1C',
         'POLARITY': _VerticalPolarity,
+        'CURRENT': 118.2
     }
 
 
@@ -776,6 +781,7 @@ class Q2C(QShort):
     PARAMETERS = {
         'LABEL1': 'Q2C',
         'POLARITY': _VerticalPolarity,
+        'CURRENT': 97.7
     }
 
 
@@ -786,6 +792,7 @@ class Q1G(QWall):
     PARAMETERS = {
         'LABEL1': 'Q1G',
         'POLARITY': _VerticalPolarity,
+        'CURRENT': 153.48
     }
 
 
@@ -796,6 +803,7 @@ class Q2G(QWall):
     PARAMETERS = {
         'LABEL1': 'Q2G',
         'POLARITY': _HorizontalPolarity,
+        'CURRENT': 118.37
     }
 
 
@@ -806,6 +814,7 @@ class Q3G(QShort):
     PARAMETERS = {
         'LABEL1': 'Q3G',
         'POLARITY': _HorizontalPolarity,
+        'CURRENT': 49.45
     }
 
     def post_init(self,
@@ -848,6 +857,7 @@ class Q4G(QShort):
     PARAMETERS = {
         'LABEL1': 'Q4G',
         'POLARITY': _VerticalPolarity,
+        'CURRENT': 71.12
     }
 
     def post_init(self,
@@ -890,6 +900,7 @@ class Q5G(QLong):
     PARAMETERS = {
         'LABEL1': 'Q5G',
         'POLARITY': _HorizontalPolarity,
+        'CURRENT': 115.91
     }
 
     def post_init(self,
@@ -932,6 +943,7 @@ class Q6G(QShort):
     PARAMETERS = {
         'LABEL1': 'Q6G',
         'POLARITY': _VerticalPolarity,
+        'CURRENT': 104.3
     }
 
     def post_init(self,
@@ -974,6 +986,7 @@ class Q7G(QShort):
     PARAMETERS = {
         'LABEL1': 'Q7G',
         'POLARITY': _HorizontalPolarity,
+        'CURRENT': 88.5
     }
 
     def post_init(self,
@@ -1089,6 +1102,7 @@ class SL2G(VerticalSlits):
 
 class ResearchArea:
     """Proteus One research area input sequence."""
+
     def __init__(self):
         """
         TODO
@@ -1104,6 +1118,7 @@ class CGTR:
         >>> cgtr = CGTR()
         >>> cgtr.shoot()
     """
+
     def __init__(self,
                  kinematics: _Kinematics = _Kinematics(230 * _ureg.MeV, kinetic=True),
                  b1g: Optional[B1G] = None,
@@ -1171,6 +1186,9 @@ class CGTR:
         if with_fit:
             self.fit_dipoles(kinematics=kinematics)
 
+        for quads in [self.q1g, self.q2g, self.q3g, self.q4g, self.q5g, self.q6g, self.q7g]:
+            quads.current *= (self.beam.kinematics.brho / kinematics.brho).magnitude
+
         self.zi: _Input = _Input('CGTR', line=[
             self.beam,
             self.start,
@@ -1213,7 +1231,8 @@ class CGTR:
             _Chamber('Chamber4', IA=1, IFORM=1, J=0, C1=4.9 * _ureg.cm, C2=2.2 * _ureg.cm, C3=self.b2g.RM),
             self.b2g,
             _Chamber(IA=2),
-            _Drift('B2G_SMX', XL=21.21 * _ureg.cm + 10.56 * _ureg.cm - self.b2g.extra_drift - (self.smx.length - 159 * _ureg.mm)/2),
+            _Drift('B2G_SMX', XL=21.21 * _ureg.cm + 10.56 * _ureg.cm - self.b2g.extra_drift - (
+                        self.smx.length - 159 * _ureg.mm) / 2),
             self.smx,
             _Drift('SMX_SMY', XL=13.04 * _ureg.cm),
             self.smy,
