@@ -341,7 +341,7 @@ class SMX(_Multipole):
 
     """
     PARAMETERS = {
-        'XL': 0.26317552187769017 * _ureg.m,
+        'XL': 0.159* _ureg.m,
         'LAM_E': 0.03879980891555799 * _ureg.m,
         'C0_E': 2.260586829767431,
         'C2_E': -0.08454912439481363,
@@ -417,7 +417,7 @@ class SMY(_Multipole):
 
     """
     PARAMETERS = {
-        'XL': 0.15221715277508374 * _ureg.m,
+        'XL': 0.109 * _ureg.m,
         'R1': 90 * _ureg.degree,
         'LAM_E': 0.037857895089871904 * _ureg.m,
         'C0_E': 0.1999859299335233,
@@ -1227,6 +1227,7 @@ class CGTR:
             _Drift('Q7G_SL3G', XL=11.95 * _ureg.cm + 4.616 * _ureg.cm),
             self.sl3g,
             _Drift('SL3G_B2G', XL=30.9927502 * _ureg.cm - self.b2g.extra_drift),
+            _Drift("A", XL=60.54860170082731*_ureg.mm),
             _Chamber(IA=2),
             _Chamber('Chamber4', IA=1, IFORM=1, J=0, C1=4.9 * _ureg.cm, C2=2.2 * _ureg.cm, C3=self.b2g.RM),
             self.b2g,
@@ -1234,13 +1235,14 @@ class CGTR:
             _Drift('B2G_SMX', XL=21.21 * _ureg.cm + 10.56 * _ureg.cm - self.b2g.extra_drift - (
                         self.smx.length - 159 * _ureg.mm) / 2),
             self.smx,
-            _Drift('SMX_SMY', XL=13.04 * _ureg.cm),
+            _Drift('SMX_SMY', XL=13.03 * _ureg.cm),
             self.smy,
             _Drift('SMY_B3G', XL=5.543 * _ureg.cm - self.b3g.extra_drift),
-            _Collimator('B3G_ENTxRY', IA=1, IFORM=1, J=0, C1=11 / 2 * _ureg.cm, C2=9 / 2 * _ureg.cm),
+            _Drift("B", XL=180.82301438631706*_ureg.mm),
+            _Collimator('B3G_ENTRY', IA=1, IFORM=1, J=0, C1=11 / 2 * _ureg.cm, C2=9 / 2 * _ureg.cm),
             self.b3g,
-            _Collimator('B3G_EXIT', IA=1, IFORM=1, J=0, C1=13.65 / 2 * _ureg.cm, C2=9 / 2 * _ureg.cm),
-            _Drift('FINAL', XL=1101.071 * _ureg.mm - self.b3g.extra_drift),
+            _Collimator('B3G_EXIT', IA=1, IFORM=1, J=0, C1=275 / 2 * _ureg.mm, C2=183 / 2 * _ureg.mm),
+            _Drift('FINAL', XL=1101.071 * _ureg.mm - self.b3g.extra_drift + 0.03224762253327739*_ureg.m),
             self.iso,
         ],
                                  )
