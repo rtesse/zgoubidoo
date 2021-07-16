@@ -249,11 +249,11 @@ class CartesianMagnet(Magnet, metaclass=CartesianMagnetType):
 
     @property
     def entrance_face_integration(self) -> _Q:
-        return self.X_E
+        return self.X_E or 0 * _ureg.m
 
     @property
     def exit_face_integration(self) -> _Q:
-        return self.X_S
+        return self.X_S or 0 * _ureg.m
 
 
 class PolarMagnetType(MagnetType):
